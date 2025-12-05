@@ -1,0 +1,10 @@
+[package]
+name = "advanced-hands-on-rust"
+version = "0.1.0"
+edition = "2024"
+
+[workspace.dependencies]
+bevy = "0.15.1"
+
+[workspace]
+members = ["hello_bevy","hello_world"]
