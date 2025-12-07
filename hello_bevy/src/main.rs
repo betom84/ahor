@@ -1,4 +1,4 @@
-use bevy::{math::VectorSpace, prelude::*};
+use bevy::prelude::*;
 
 #[derive(Component)]
 struct Dragon;
@@ -12,7 +12,7 @@ fn main() {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
 
     let dragon_image = asset_server.load("dragon.png");
     commands
