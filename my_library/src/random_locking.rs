@@ -1,4 +1,5 @@
 use rand::{distributions::uniform::SampleRange, Rng, SeedableRng};
+use std::sync::Mutex;
 
 #[cfg(all(not(feature = "xorshift"), not(feature = "pcg")))]
 type RngCore = rand::prelude::StdRng;
@@ -11,35 +12,35 @@ type RngCore = rand_pcg::Pcg64Mcg;
 
 #[derive(bevy::prelude::Resource)]
 pub struct RandomNumberGenerator {
-    rng: RngCore,
+    rng: Mutex<RngCore>,
 }
 
 impl RandomNumberGenerator {
     pub fn new() -> Self {
         Self {
-            rng: RngCore::from_entropy(),
+            rng: Mutex::new(RngCore::from_entropy()),
         }
     }
 
     pub fn seeded(seed: u64) -> Self {
         Self {
-            rng: RngCore::seed_from_u64(seed),
+            rng: Mutex::new(RngCore::seed_from_u64(seed)),
         }
     }
 
-    pub fn range<T>(&mut self, range: impl SampleRange<T>) -> T
+    pub fn range<T>(&self, range: impl SampleRange<T>) -> T
     where
         T: rand::distributions::uniform::SampleUniform + PartialOrd,
     {
-        self.rng.gen_range(range)
+        self.rng.lock().unwrap().gen_range(range)
     }
 
-    pub fn gen_next<T>(&mut self) -> T
+    pub fn gen_next<T>(&self) -> T
     where
         rand::distributions::Standard: rand::prelude::Distribution<T>,
     {
         // this requires rust edition 2021 to be set in Cargo.toml !!
-        self.rng.gen()
+        self.rng.lock().unwrap().gen()
     }
 }
 
@@ -62,7 +63,7 @@ mod test {
 
     #[test]
     fn test_range_bounds() {
-        let mut rng = RandomNumberGenerator::new();
+        let rng = RandomNumberGenerator::new();
 
         for _ in 0..1000 {
             let n = rng.range(1..10);
@@ -73,7 +74,7 @@ mod test {
 
     #[test]
     fn test_reproducibility() {
-        let mut rng = (
+        let rng = (
             RandomNumberGenerator::seeded(1),
             RandomNumberGenerator::seeded(1),
         );
@@ -88,14 +89,14 @@ mod test {
 
     #[test]
     fn test_next_types() {
-        let mut rng = RandomNumberGenerator::new();
+        let rng = RandomNumberGenerator::new();
         let _: i32 = rng.gen_next();
         let _ = rng.gen_next::<f32>();
     }
 
     #[test]
     fn test_float() {
-        let mut rng = RandomNumberGenerator::new();
+        let rng = RandomNumberGenerator::new();
 
         for _ in 0..1000 {
             let n = rng.range(-5000.0f32..5000.0f32);

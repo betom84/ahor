@@ -6,6 +6,9 @@ edition = "2024"
 [workspace.dependencies]
 bevy = "0.16.0"
 bevy_egui = "0.34.1"
+rand = "0.8"
+rand_pcg = "0.3"
+rand_xorshift = "0.3"
 
 [workspace]
 members = ["hello_bevy","hello_world", "my_library", "pig"]

@@ -3,5 +3,21 @@ name = "my_library"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+#default = ["pcg"]
+pcg = ["rand_pcg"]
+xorshift = ["rand_xorshift"]
+locking = []
+
 [dependencies]
-rand = "0.8"
+bevy = { workspace = true }
+rand = { workspace = true }
+rand_pcg = { workspace = true, optional = true }
+rand_xorshift = { workspace = true, optional = true }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "random"
+harness = false
