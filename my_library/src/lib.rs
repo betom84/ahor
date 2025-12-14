@@ -1,3 +1,26 @@
+#![warn(missing_docs)]
+//! `my_library` provides a suite of helpers to create games with Bevy.
+//!
+//! ## What's Included?
+//!
+//! `my_library` includes:
+//! * Random number generation facilities.
+//!
+//! ## Feature Flags
+//!
+//! The following feature flags are supported: `xorshift`, `pcg`, `locking`.
+//!
+//! ### Random Number Generation
+//!
+//! * The `locking` feature enables interior mutability inside [`RandomNumberGenerator`],
+//!   allowing it to be used as a resource (`Res<RandomNumberGenerator`)
+//!   rather than requiring mutability (`ResMut<RandomNumberGenerator>`)
+//! * You can control which random number generation algorithm is used by specifying *one* of:
+//!     * `xorshift` to use the XorShift algorithm.
+//!     * `pcg` to use the PCG algorithm.
+//!     * none to use default implementation.
+
+use bevy::log::warn;
 pub use rand;
 
 #[cfg(not(feature = "locking"))]
@@ -9,18 +32,3 @@ pub use random::*;
 mod random_locking;
 #[cfg(feature = "locking")]
 pub use random_locking::*;
-
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
